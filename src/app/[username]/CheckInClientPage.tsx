@@ -195,7 +195,7 @@ export default function CheckInClientPage({ username }: { username: string }) {
               onClick={() => handleCheckTypeSelect("IN")}
               className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-4 rounded-lg transition-all duration-300 shadow-sm hover:shadow-md"
             >
-              เข้าเลิก
+              เข้างาน
             </button>
             <button
               onClick={() => handleCheckTypeSelect("OUT")}
