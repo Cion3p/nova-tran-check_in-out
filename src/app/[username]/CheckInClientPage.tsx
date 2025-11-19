@@ -195,13 +195,13 @@ export default function CheckInClientPage({ username }: { username: string }) {
               onClick={() => handleCheckTypeSelect("IN")}
               className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-4 rounded-lg transition-all duration-300 shadow-sm hover:shadow-md"
             >
-              Check In
+              เข้าเลิก
             </button>
             <button
               onClick={() => handleCheckTypeSelect("OUT")}
               className="bg-red-500 hover:bg-red-600 text-white font-bold py-4 px-4 rounded-lg transition-all duration-300 shadow-sm hover:shadow-md"
             >
-              Check Out
+              เลิกงาน
             </button>
           </div>
         )}
