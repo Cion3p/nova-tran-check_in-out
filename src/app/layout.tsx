@@ -10,6 +10,10 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Transport Check-in/out",
   description: "Check-in and Check-out system with photo and location.",
+  icons: {
+    icon: 'https://datacenter.novamodular.co.th/img/nova_logo.png',
+    apple: 'https://datacenter.novamodular.co.th/img/nova_logo.png',
+  },
 };
 
 export default function RootLayout({
