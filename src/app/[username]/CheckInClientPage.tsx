@@ -1,8 +1,18 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect, Suspense } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import Webcam from "react-webcam";
 import Swal from "sweetalert2";
+
+// Define a more specific type for the BeforeInstallPromptEvent
+interface BeforeInstallPromptEvent extends Event {
+  readonly platforms: string[];
+  readonly userChoice: Promise<{
+    outcome: 'accepted' | 'dismissed';
+    platform: string;
+  }>;
+  prompt(): Promise<void>;
+}
 
 type CheckType = "IN" | "OUT";
 type Status = "idle" | "locating" | "ready" | "capturing" | "sending" | "success" | "error";
@@ -14,6 +24,35 @@ export default function CheckInClientPage({ username }: { username: string }) {
   const [checkType, setCheckType] = useState<CheckType | null>(null);
   const [location, setLocation] = useState<{ lat: number; lon: number } | null>(null);
   const [imgSrc, setImgSrc] = useState<string | null>(null);
+  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setInstallPrompt(e as BeforeInstallPromptEvent);
+      console.log("beforeinstallprompt event fired!");
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!installPrompt) {
+      return;
+    }
+    await installPrompt.prompt();
+    const { outcome } = await installPrompt.userChoice;
+    if (outcome === 'accepted') {
+      console.log('User accepted the install prompt');
+    } else {
+      console.log('User dismissed the install prompt');
+    }
+    setInstallPrompt(null);
+  };
 
   const handleCheckTypeSelect = (type: CheckType) => {
     setStatus("locating");
@@ -138,7 +177,16 @@ export default function CheckInClientPage({ username }: { username: string }) {
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-blue-50 p-4">
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6 text-center">
-        <h1 className="text-3xl font-bold mb-2 text-gray-800">Check-in / Check-out</h1>
+        <div className="flex justify-center items-center mb-2 relative">
+          <h1 className="text-3xl font-bold text-gray-800">Check-in / Check-out</h1>
+          {installPrompt && (
+            <button onClick={handleInstallClick} className="absolute right-0 bg-blue-100 text-blue-700 p-2 rounded-full hover:bg-blue-200 transition-all" title="ติดตั้งแอปพลิเคชัน">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+            </button>
+          )}
+        </div>
         <p className="text-lg text-gray-600 mb-4">สำหรับ: <span className="font-semibold text-blue-700">{username}</span></p>
         
         {status === "idle" && (
